@@ -143,7 +143,9 @@ Application.behaviors = Entity.behaviors + Behaviors
 ---   * A list of [choice](https://www.hammerspoon.org/docs/hs.chooser.html#choices) objects
 function Application:getChooserItems()
     local app = self:getApplication()
-    local windows = app:allWindows()
+    local filter = hs.window.filter.new(false)
+    filter:setAppFilter(self.name, {allowTitles = 0})
+    local windows = filter:getWindows()
     local choices = {}
 
     for index, window in pairs(windows) do
@@ -377,7 +379,8 @@ end
 ---   * None
 function Application.focus(app, choice)
     if choice then
-        local window = hs.window(tonumber(choice.windowId))
+        local filter = hs.window.filter.new(true)
+        local window = hs.window(tonumber(choice.windowId),true,filter:getWindows())
 
         if window then window:focus() end
         if window and choice.tabIndex then
